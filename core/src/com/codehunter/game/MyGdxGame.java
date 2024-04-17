@@ -2,82 +2,69 @@ package com.codehunter.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 
 public class MyGdxGame extends ApplicationAdapter {
-    SpriteBatch batch;
-    Texture appleTexture;
-    float appleX;
-    float appleY;
-    Rectangle appleRectangle;
 
-    Texture sharkTexture;
-    float sharkX;
-    float sharkY;
-    Rectangle sharkRectangle;
-
-    Texture winTexture;
-    boolean win;
+    Stage mainStage;
+    Shark shark;
+    CommonActor apple;
+    CommonActor winMessage;
 
     @Override
     public void create() {
-        batch = new SpriteBatch();
-        appleTexture = new Texture("apple.png");
-        appleX = 60;
-        appleY = 60;
-        appleRectangle = new Rectangle(appleX, appleY, appleTexture.getWidth(), appleTexture.getHeight());
+        mainStage = new Stage();
+        Gdx.input.setInputProcessor(mainStage);
+        initialize();
 
-        sharkTexture = new Texture("shark.png");
-        sharkX = 0;
-        sharkY = 0;
-        sharkRectangle = new Rectangle(sharkX, sharkY, sharkTexture.getWidth(), sharkTexture.getHeight());
+        apple.setDebug(true);
+        shark.setDebug(true);
+        winMessage.setDebug(true);
+    }
 
-        winTexture = new Texture("win.png");
+    private void initialize() {
+        apple = new CommonActor(new Texture("apple.png"));
+        apple.setPosition(60, 60);
+        mainStage.addActor(apple);
+
+        shark = new Shark(new Texture("shark.png"));
+        shark.setPosition(0, 0);
+        mainStage.addActor(shark);
+
+        winMessage = new CommonActor(new Texture("win.png"));
+        winMessage.setPosition((float) Gdx.graphics.getWidth() / 2 - winMessage.getWidth() / 2,
+                (float) Gdx.graphics.getHeight() / 2 - winMessage.getHeight() / 2);
+        winMessage.setVisible(false);
+        mainStage.addActor(winMessage);
     }
 
     @Override
     public void render() {
-        // check user input
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && sharkX > 0) {
-            sharkX--;
-        }
-        boolean isMaxWidth = sharkX < Gdx.graphics.getWidth() - sharkTexture.getWidth();
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && isMaxWidth) {
-            sharkX++;
-        }
-        boolean isMaxHeight = sharkY < Gdx.graphics.getHeight() - sharkTexture.getHeight();
-        if (Gdx.input.isKeyPressed(Input.Keys.UP) && isMaxHeight) {
-            sharkY++;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN) && sharkY > 0) {
-            sharkY--;
-        }
-        sharkRectangle.setPosition(sharkX, sharkY);
-        if (sharkRectangle.overlaps(appleRectangle)) {
-            win = true;
-        }
+        float delta = Gdx.graphics.getDeltaTime();
+        mainStage.act(delta);
 
+        update(delta);
 
-        // build screen
-        ScreenUtils.clear(1, 1, 1, 1);
-        batch.begin();
-        if (win) {
-            batch.draw(winTexture, appleX, appleY);
-        } else {
-            batch.draw(sharkTexture, sharkX, sharkY);
-            batch.draw(appleTexture, appleX, appleY);
+        // clear screen
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        // draw graphics
+        mainStage.draw();
+    }
+
+    private void update(float delta) {
+        if (shark.isOverlap(apple)) {
+            apple.remove();
+            shark.remove();
+            winMessage.setVisible(true);
         }
-        batch.end();
     }
 
     @Override
     public void dispose() {
-        batch.dispose();
-        appleTexture.dispose();
-        sharkTexture.dispose();
+        super.dispose();
+        mainStage.dispose();
     }
 }
