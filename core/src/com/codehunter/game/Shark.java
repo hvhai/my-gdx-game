@@ -3,10 +3,11 @@ package com.codehunter.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 
 public class Shark extends CommonActor {
-    public Shark(Texture texture) {
-        super(texture);
+    public Shark(Texture texture, float x, float y, Stage stage) {
+        super(texture, x, y, stage);
     }
 
     @Override

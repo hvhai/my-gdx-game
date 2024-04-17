@@ -6,18 +6,21 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 
 public class CommonActor extends Actor {
     private final TextureRegion textureRegion;
     private final Rectangle rectangle;
 
-    public CommonActor(Texture texture) {
+    public CommonActor(Texture texture, float x, float y, Stage stage) {
         super();
         rectangle = new Rectangle();
         rectangle.setSize(texture.getWidth(), texture.getHeight());
 
         textureRegion = new TextureRegion(texture, texture.getWidth(), texture.getHeight());
         setSize(texture.getWidth(), texture.getHeight());
+        setPosition(x, y);
+        stage.addActor(this);
     }
 
     public Rectangle getRectangle() {
