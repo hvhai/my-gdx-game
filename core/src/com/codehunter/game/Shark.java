@@ -6,8 +6,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
 public class Shark extends CommonActor {
-    public Shark(Texture texture, float x, float y, Stage stage) {
-        super(texture, x, y, stage);
+    public Shark(float x, float y, Stage stage) {
+        super(x, y, stage);
+        loadTexture("shark.png");
     }
 
     @Override

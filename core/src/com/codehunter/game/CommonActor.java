@@ -12,20 +12,16 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 
 public class CommonActor extends Actor {
-//    private final TextureRegion textureRegion;
     private final Rectangle rectangle;
 
     private Animation<TextureRegion> animation;
     private float elapsedTime;
     private boolean animationPaused;
 
-    public CommonActor(Texture texture, float x, float y, Stage stage) {
+    public CommonActor(float x, float y, Stage stage) {
         super();
         rectangle = new Rectangle();
-        rectangle.setSize(texture.getWidth(), texture.getHeight());
 
-//        textureRegion = new TextureRegion(texture, texture.getWidth(), texture.getHeight());
-//        setSize(texture.getWidth(), texture.getHeight());
         setPosition(x, y);
         stage.addActor(this);
 
@@ -58,17 +54,15 @@ public class CommonActor extends Actor {
 
         Color color = getColor();
         batch.setColor(color.r, color.g, color.b, color.a);
-//        if (isVisible())
         if (animation != null && isVisible())
             batch.draw(animation.getKeyFrame(elapsedTime),
                     getX(), getY(), getOriginX(), getOriginY(),
                     getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
-//            batch.draw(textureRegion,
-//                    getX(), getY(), getOriginX(), getOriginY(),
-//                    getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
-
     }
 
+    // --------------------------------------------------
+    // Animation method
+    // --------------------------------------------------
     public void setAnimation(Animation<TextureRegion> animation) {
         this.animation = animation;
         TextureRegion animationTextureRegion = animation.getKeyFrame(0);
@@ -76,6 +70,8 @@ public class CommonActor extends Actor {
         float height = animationTextureRegion.getRegionHeight();
         setSize(width, height);
         setOrigin(width / 2, height / 2);
+
+        rectangle.setSize(width, height);
     }
 
     public Animation<TextureRegion> loadAnimationFromSheet(String filename, int rows, int cols,
