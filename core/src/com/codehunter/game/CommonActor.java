@@ -44,8 +44,6 @@ public class CommonActor extends Actor {
         super.act(delta);
         if (!animationPaused)
             elapsedTime += delta;
-//        if ( animation != null && isAnimationFinished() )
-//            remove();
     }
 
     @Override
