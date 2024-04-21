@@ -19,27 +19,33 @@ public class Runner extends CommonActor {
     public void act(float delta) {
         super.act(delta);
 
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && getX() > 0) {
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             accelerationAtAngle(180);
         }
-        boolean isNotMaxWidth = getX() < (Gdx.graphics.getWidth() - getWidth());
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && isNotMaxWidth) {
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             accelerationAtAngle(0);
         }
-        boolean isNotMaxHeight = getY() < (Gdx.graphics.getHeight() - getHeight());
-        if (Gdx.input.isKeyPressed(Input.Keys.UP) && isNotMaxHeight) {
+        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
             accelerationAtAngle(90);
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN) && getY() > 0) {
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             accelerationAtAngle(270);
         }
 
         applyPhysic(delta);
 
-        // setAnimationPaused(!isMoving());
+        setAnimationPaused(!isMoving());
 
         if (getSpeed() > 0) {
             setRotation(getMotionAngle());
+        }
+
+        boolean isMaxWidth = getX() >= (Gdx.graphics.getWidth() - getWidth());
+        boolean isMaxHeight = getY() >= (Gdx.graphics.getHeight() - getHeight());
+        boolean isMinWidth = getX() <= 0;
+        boolean isMinHeight = getY() <= 0;
+        if (isMaxHeight || isMaxWidth || isMinWidth || isMinHeight) {
+            setSpeed(0);
         }
     }
 }
