@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 public class MyGdxGame extends BaseGame {
 
     Shark shark;
-    CommonActor apple;
+    Apple apple;
     CommonActor winMessage;
 
     CommonActor knight;
@@ -48,8 +48,8 @@ public class MyGdxGame extends BaseGame {
 
     @Override
     protected void update(float delta) {
-        if (shark.isOverlap(apple)) {
-            apple.remove();
+        if (shark.isOverlap(apple) && !apple.isCollected()) {
+            apple.collect();
             shark.remove();
             winMessage.setVisible(true);
         }
