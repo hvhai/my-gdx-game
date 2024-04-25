@@ -9,6 +9,7 @@ public class Shark extends CommonActor {
     public Shark(float x, float y, Stage stage) {
         super(x, y, stage);
         loadTexture("shark.png");
+        setBoundaryPolygon(8);
     }
 
     @Override

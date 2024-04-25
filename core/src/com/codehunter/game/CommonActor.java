@@ -6,8 +6,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -15,7 +16,7 @@ import com.badlogic.gdx.utils.Array;
 
 public class CommonActor extends Actor {
 
-    private final Rectangle rectangle;
+//    private final Rectangle rectangle;
 
     private Animation<TextureRegion> animation;
     private float elapsedTime;
@@ -27,9 +28,11 @@ public class CommonActor extends Actor {
     private float maxSpeed;
     private float deceleration;
 
+    private Polygon boundaryPolygon;
+
     public CommonActor(float x, float y, Stage stage) {
         super();
-        rectangle = new Rectangle();
+//        rectangle = new Rectangle();
 
         setPosition(x, y);
         stage.addActor(this);
@@ -39,20 +42,20 @@ public class CommonActor extends Actor {
         animationPaused = false;
 
         velocityVector = new Vector2(0, 0);
-        accelerationVector = new Vector2(0,0);
+        accelerationVector = new Vector2(0, 0);
         acceleration = 0;
         maxSpeed = 1000;
         deceleration = 0;
     }
 
-    public Rectangle getRectangle() {
-        rectangle.setPosition(getX(), getY());
-        return rectangle;
-    }
+//    public Rectangle getRectangle() {
+//        rectangle.setPosition(getX(), getY());
+//        return rectangle;
+//    }
 
-    public boolean isOverlap(CommonActor otherActor) {
-        return this.getRectangle().overlaps(otherActor.getRectangle());
-    }
+//    public boolean isOverlap(CommonActor otherActor) {
+//        return this.getRectangle().overlaps(otherActor.getRectangle());
+//    }
 
     @Override
     public void act(float delta) {
@@ -86,11 +89,14 @@ public class CommonActor extends Actor {
         setSize(width, height);
         setOrigin(width / 2, height / 2);
 
-        rectangle.setSize(width, height);
+//        rectangle.setSize(width, height);
+        if (boundaryPolygon == null) {
+            setBoundaryRectangle();
+        }
     }
 
     public Animation<TextureRegion> loadAnimationFromSheet(String filename, int rows, int cols,
-            float frameDuration, boolean loop) {
+                                                           float frameDuration, boolean loop) {
         Texture texture = new Texture(Gdx.files.internal(filename), true);
         texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         int frameWidth = texture.getWidth() / cols;
@@ -105,8 +111,8 @@ public class CommonActor extends Actor {
 
         Animation<TextureRegion> ani = new Animation<>(frameDuration, textureRegionArray);
         if (loop) {
-            ani.setPlayMode(Animation.PlayMode.LOOP); 
-        }else {
+            ani.setPlayMode(Animation.PlayMode.LOOP);
+        } else {
             ani.setPlayMode(Animation.PlayMode.NORMAL);
         }
         if (animation == null) {
@@ -116,7 +122,7 @@ public class CommonActor extends Actor {
     }
 
     public Animation<TextureRegion> loadAnimationFromFiles(String[] fileNames,
-            float frameDuration, boolean loop) {
+                                                           float frameDuration, boolean loop) {
         int fileCount = fileNames.length;
         Array<TextureRegion> textureArray = new Array<TextureRegion>();
         for (int n = 0; n < fileCount; n++) {
@@ -127,8 +133,8 @@ public class CommonActor extends Actor {
         }
         Animation<TextureRegion> anim = new Animation<TextureRegion>(frameDuration, textureArray);
         if (loop) {
-            anim.setPlayMode(Animation.PlayMode.LOOP); 
-        }else {
+            anim.setPlayMode(Animation.PlayMode.LOOP);
+        } else {
             anim.setPlayMode(Animation.PlayMode.NORMAL);
         }
         if (animation == null) {
@@ -156,8 +162,8 @@ public class CommonActor extends Actor {
     // --------------------------------------------------
     public void setSpeed(float speed) {
         if (velocityVector.len() == 0) {
-            velocityVector.set(speed, 0); 
-        }else {
+            velocityVector.set(speed, 0);
+        } else {
             velocityVector.setLength(speed);
         }
     }
@@ -189,23 +195,77 @@ public class CommonActor extends Actor {
     public void setMaxSpeed(float maxSpeed) {
         this.maxSpeed = maxSpeed;
     }
-    
+
     public void setDeceleration(float deceleration) {
         this.deceleration = deceleration;
     }
 
     public void applyPhysic(float delta) {
         // apply acceleration
-        velocityVector.add(accelerationVector.x*delta, accelerationVector.y*delta);
+        velocityVector.add(accelerationVector.x * delta, accelerationVector.y * delta);
         float speed = getSpeed();
         // decrease speed when not accelerating
         if (accelerationVector.len() == 0)
-            speed -= deceleration*delta;
+            speed -= deceleration * delta;
         // keep speed within set bounds
         speed = MathUtils.clamp(speed, 0, maxSpeed);
         // appy velocity
-        moveBy(velocityVector.x*delta, velocityVector.y*delta);
+        moveBy(velocityVector.x * delta, velocityVector.y * delta);
         // reset the acceleration
         accelerationVector.set(0, 0);
+    }
+
+    // --------------------------------------------------
+    // Collision
+    // --------------------------------------------------
+
+    public void setBoundaryRectangle() {
+        float width = getWidth();
+        float height = getHeight();
+        float[] vertices = {0, 0, width, 0, width, height, 0, height};
+        boundaryPolygon = new Polygon(vertices);
+    }
+
+    public void setBoundaryPolygon(int numberSides) {
+        float width = getWidth();
+        float height = getHeight();
+        float[] vertices = new float[2 * numberSides];
+        for (int i = 0; i < numberSides; i++) {
+            float angle = i * 6.28f / numberSides;
+            // x-coordinate
+            vertices[2 * i] = width / 2 * MathUtils.cos(angle) + width / 2;
+            vertices[2 * i + 1] = height / 2 * MathUtils.cos(angle) + height / 2;
+        }
+        boundaryPolygon = new Polygon(vertices);
+    }
+
+    public Polygon getBoundaryPolygon() {
+        boundaryPolygon.setPosition(getX(), getY());
+        boundaryPolygon.setOrigin(getOriginX(), getOriginY());
+        boundaryPolygon.setRotation(getRotation());
+        boundaryPolygon.setScale(getScaleX(), getScaleY());
+        return boundaryPolygon;
+    }
+
+    public boolean isOverlap(CommonActor otherActor) {
+        Polygon polygon1 = this.getBoundaryPolygon();
+        Polygon polygon2 = otherActor.getBoundaryPolygon();
+        // quick check for performance
+        if (!polygon1.getBoundingRectangle().overlaps(polygon2.getBoundingRectangle()))
+            return false;
+        return Intersector.overlapConvexPolygons(polygon1, polygon2);
+    }
+
+    public void centerAtPosition(float x, float y) {
+        setPosition(x - getWidth() / 2, y - getHeight() / 2);
+    }
+
+    public void centerAtActor(CommonActor otherActor) {
+        centerAtPosition(otherActor.getX() + otherActor.getWidth() / 2,
+                otherActor.getY() + otherActor.getHeight() / 2);
+    }
+
+    public void setOpacity(float opacity) {
+        this.getColor().a = opacity;
     }
 }
