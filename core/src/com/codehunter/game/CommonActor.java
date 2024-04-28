@@ -289,6 +289,11 @@ public class CommonActor extends Actor {
         return list;
     }
 
+    public static int count(Stage stage, String className)
+    {
+        return getList(stage, className).size();
+    }
+
     public Vector2 preventOverlap(CommonActor otherActor) {
         Polygon polygon1 = this.getBoundaryPolygon();
         Polygon polygon2 = otherActor.getBoundaryPolygon();

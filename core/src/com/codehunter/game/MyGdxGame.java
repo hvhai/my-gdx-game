@@ -1,6 +1,9 @@
 package com.codehunter.game;
 
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+
 public class MyGdxGame extends BaseGame {
+    boolean win;
     Turtle turtle;
 
     @Override
@@ -38,6 +41,17 @@ public class MyGdxGame extends BaseGame {
         for (CommonActor rockActor : CommonActor.getList(mainStage, Rock.class.getName())) {
             Rock rock = (Rock) rockActor;
             turtle.preventOverlap(rock);
+        }
+
+        if ( CommonActor.count(mainStage, StarFish.class.getName()) == 0 && !win )
+        {
+            win = true;
+            CommonActor youWinMessage = new CommonActor(0,0,mainStage);
+            youWinMessage.loadTexture("assets/you-win.png");
+            youWinMessage.centerAtPosition(400,300);
+            youWinMessage.setOpacity(0);
+            youWinMessage.addAction( Actions.delay(1) );
+            youWinMessage.addAction( Actions.after( Actions.fadeIn(1) ) );
         }
     }
 }
