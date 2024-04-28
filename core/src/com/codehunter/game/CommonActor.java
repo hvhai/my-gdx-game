@@ -14,6 +14,8 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 
+import java.util.ArrayList;
+
 public class CommonActor extends Actor {
 
 //    private final Rectangle rectangle;
@@ -267,5 +269,37 @@ public class CommonActor extends Actor {
 
     public void setOpacity(float opacity) {
         this.getColor().a = opacity;
+    }
+
+    public static ArrayList<CommonActor> getList(Stage stage, String className) {
+        ArrayList<CommonActor> list = new ArrayList<CommonActor>();
+
+        Class theClass = null;
+        try {
+            theClass = Class.forName(className);
+        } catch (Exception error) {
+            error.printStackTrace();
+        }
+
+        for (Actor a : stage.getActors()) {
+            if (theClass.isInstance(a))
+                list.add((CommonActor) a);
+        }
+
+        return list;
+    }
+
+    public Vector2 preventOverlap(CommonActor otherActor) {
+        Polygon polygon1 = this.getBoundaryPolygon();
+        Polygon polygon2 = otherActor.getBoundaryPolygon();
+        if (!polygon1.getBoundingRectangle().overlaps(polygon2.getBoundingRectangle()))
+            return null;
+        Intersector.MinimumTranslationVector mtv = new Intersector.MinimumTranslationVector();
+        boolean polygonOverlap = Intersector.overlapConvexPolygons(polygon1, polygon2, mtv);
+        if (!polygonOverlap) {
+            return null;
+        }
+        this.moveBy(mtv.normal.x * mtv.depth, mtv.normal.y * mtv.depth);
+        return mtv.normal;
     }
 }

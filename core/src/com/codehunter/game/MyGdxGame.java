@@ -1,57 +1,43 @@
 package com.codehunter.game;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.scenes.scene2d.Action;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-
 public class MyGdxGame extends BaseGame {
-
-    Shark shark;
-    Apple apple;
-    CommonActor winMessage;
-
-    CommonActor knight;
-    CommonActor runner;
+    Turtle turtle;
 
     @Override
     protected void initialize() {
-        apple = new Apple(100, 100, mainStage);
+        CommonActor ocean = new CommonActor(0, 0, mainStage);
+        ocean.loadTexture("water-border.jpg");
+        ocean.setSize(1200, 900);
 
-        shark = new Shark(0, 0, mainStage);
-        Action spin = Actions.rotateBy(180, 5);
-        shark.addAction(spin);
-        Action move = Actions.moveBy(50, 40, 2);
-        shark.addAction(move);
-        Action moveAfter = Actions.moveBy(50, 0, 2);
-        shark.addAction(Actions.after(moveAfter));
+        new StarFish(400, 400, mainStage);
+        new StarFish(500, 100, mainStage);
+        new StarFish(100, 450, mainStage);
 
-        Texture messageTexture = new Texture("win.png");
-        winMessage = new CommonActor(
-                (float) Gdx.graphics.getWidth() / 2 - (float) messageTexture.getWidth() / 2,
-                (float) Gdx.graphics.getHeight() / 2 - (float) messageTexture.getHeight() / 2,
-                mainStage);
-        winMessage.loadTexture("win.png");
-        winMessage.setVisible(false);
+        new Rock(200, 150, mainStage);
+        new Rock(100, 300, mainStage);
+        new Rock(300, 350, mainStage);
+        new Rock(450, 200, mainStage);
 
-        knight = new Knight(50, 200, mainStage);
-
-        runner = new Runner(200, 200, mainStage);
-
-        apple.setDebug(true);
-        shark.setDebug(true);
-        winMessage.setDebug(true);
-        knight.setDebug(true);
-        runner.setDebug(true);
+        turtle = new Turtle(20, 20, mainStage);
     }
 
 
     @Override
     protected void update(float delta) {
-        if (shark.isOverlap(apple) && !apple.isCollected()) {
-            apple.collect();
-            shark.remove();
-            winMessage.setVisible(true);
+        for (CommonActor starfishActor : CommonActor.getList(mainStage, StarFish.class.getName())) {
+            StarFish starfish = (StarFish) starfishActor;
+            if (turtle.isOverlap(starfish) && !starfish.isCollected()) {
+                starfish.collect();
+
+                Whirlpool whirl = new Whirlpool(0, 0, mainStage);
+                whirl.centerAtActor(starfish);
+                whirl.setOpacity(0.25f);
+            }
+        }
+
+        for (CommonActor rockActor : CommonActor.getList(mainStage, Rock.class.getName())) {
+            Rock rock = (Rock) rockActor;
+            turtle.preventOverlap(rock);
         }
     }
 }
