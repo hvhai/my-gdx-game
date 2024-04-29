@@ -10,7 +10,9 @@ public class MyGdxGame extends BaseGame {
     protected void initialize() {
         CommonActor ocean = new CommonActor(0, 0, mainStage);
         ocean.loadTexture("water-border.jpg");
-        ocean.setSize(1200, 900);
+//        ocean.setSize(1200, 900);
+        // set world bound by ocean
+        CommonActor.setWorldBounds(ocean);
 
         new StarFish(400, 400, mainStage);
         new StarFish(500, 100, mainStage);

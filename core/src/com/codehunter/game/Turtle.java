@@ -15,6 +15,8 @@ public class Turtle extends CommonActor {
         setDeceleration(400);
 
         setBoundaryPolygon(8);
+        // Make sure turtle always in the world
+        boundToWorld();
     }
 
     public void act(float delta) {
@@ -35,5 +37,7 @@ public class Turtle extends CommonActor {
 
         if (getSpeed() > 0)
             setRotation(getMotionAngle());
+
+        alignCamera();
     }
 }
