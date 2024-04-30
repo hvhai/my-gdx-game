@@ -1,4 +1,4 @@
-package com.codehunter.game;
+package com.codehunter.game.actor;
 
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
@@ -8,6 +8,7 @@ public class Whirlpool extends CommonActor {
         loadAnimationFromSheet("whirlpool.png", 2, 5, 0.1f, false);
     }
 
+    @Override
     public void act(float dt) {
         super.act(dt);
 

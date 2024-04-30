@@ -1,6 +1,11 @@
-package com.codehunter.game;
+package com.codehunter.game.screen;
 
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.codehunter.game.actor.CommonActor;
+import com.codehunter.game.actor.Rock;
+import com.codehunter.game.actor.StarFish;
+import com.codehunter.game.actor.Turtle;
+import com.codehunter.game.actor.Whirlpool;
 
 public class LevelScreen extends BaseScreen {
     private Turtle turtle;
@@ -11,7 +16,6 @@ public class LevelScreen extends BaseScreen {
     protected void initialize() {
         CommonActor ocean = new CommonActor(0, 0, mainStage);
         ocean.loadTexture("water-border.jpg");
-//        ocean.setSize(1200, 900);
         // set world bound by ocean
         CommonActor.setWorldBounds(ocean);
 

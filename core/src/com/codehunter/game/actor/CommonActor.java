@@ -1,4 +1,4 @@
-package com.codehunter.game;
+package com.codehunter.game.actor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CommonActor extends Actor {
 
@@ -100,17 +101,16 @@ public class CommonActor extends Actor {
             setY(worldBounds.height - getHeight());
     }
 
-    public void alignCamera()
-    {
+    public void alignCamera() {
         Camera cam = this.getStage().getCamera();
         Viewport v = this.getStage().getViewport();
         // center camera on actor
-        cam.position.set( this.getX() + this.getOriginX(), this.getY() + this.getOriginY(), 0 );
+        cam.position.set(this.getX() + this.getOriginX(), this.getY() + this.getOriginY(), 0);
         // bound camera to layout
         cam.position.x = MathUtils.clamp(cam.position.x,
-                cam.viewportWidth/2,  worldBounds.width -  cam.viewportWidth/2);
+                cam.viewportWidth / 2, worldBounds.width - cam.viewportWidth / 2);
         cam.position.y = MathUtils.clamp(cam.position.y,
-                cam.viewportHeight/2, worldBounds.height - cam.viewportHeight/2);
+                cam.viewportHeight / 2, worldBounds.height - cam.viewportHeight / 2);
         cam.update();
     }
 
@@ -125,7 +125,6 @@ public class CommonActor extends Actor {
         setSize(width, height);
         setOrigin(width / 2, height / 2);
 
-//        rectangle.setSize(width, height);
         if (boundaryPolygon == null) {
             setBoundaryRectangle();
         }
@@ -305,7 +304,7 @@ public class CommonActor extends Actor {
         this.getColor().a = opacity;
     }
 
-    public static ArrayList<CommonActor> getList(Stage stage, String className) {
+    public static List<CommonActor> getList(Stage stage, String className) {
         ArrayList<CommonActor> list = new ArrayList<CommonActor>();
 
         Class theClass = null;
@@ -323,8 +322,7 @@ public class CommonActor extends Actor {
         return list;
     }
 
-    public static int count(Stage stage, String className)
-    {
+    public static int count(Stage stage, String className) {
         return getList(stage, className).size();
     }
 
