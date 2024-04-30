@@ -1,6 +1,7 @@
 package com.codehunter.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -9,14 +10,18 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.Viewport;
+
+import java.util.ArrayList;
 
 public class CommonActor extends Actor {
 
-//    private final Rectangle rectangle;
+    private static Rectangle worldBounds;
 
     private Animation<TextureRegion> animation;
     private float elapsedTime;
@@ -32,7 +37,6 @@ public class CommonActor extends Actor {
 
     public CommonActor(float x, float y, Stage stage) {
         super();
-//        rectangle = new Rectangle();
 
         setPosition(x, y);
         stage.addActor(this);
@@ -48,14 +52,6 @@ public class CommonActor extends Actor {
         deceleration = 0;
     }
 
-//    public Rectangle getRectangle() {
-//        rectangle.setPosition(getX(), getY());
-//        return rectangle;
-//    }
-
-//    public boolean isOverlap(CommonActor otherActor) {
-//        return this.getRectangle().overlaps(otherActor.getRectangle());
-//    }
 
     @Override
     public void act(float delta) {
@@ -76,6 +72,46 @@ public class CommonActor extends Actor {
                     getX(), getY(), getOriginX(), getOriginY(),
                     getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
         }
+    }
+
+    // --------------------------------------------------
+    // setting world bound
+    // --------------------------------------------------
+    public static void setWorldBounds(float width, float height) {
+        worldBounds = new Rectangle(0, 0, width, height);
+    }
+
+    public static void setWorldBounds(CommonActor otherActor) {
+        setWorldBounds(otherActor.getWidth(), otherActor.getHeight());
+    }
+
+    public void boundToWorld() {
+        // check left edge
+        if (getX() < 0)
+            setX(0);
+        // check right edge
+        if (getX() + getWidth() > worldBounds.width)
+            setX(worldBounds.width - getWidth());
+        // check bottom edge
+        if (getY() < 0)
+            setY(0);
+        // check top edge
+        if (getY() + getHeight() > worldBounds.height)
+            setY(worldBounds.height - getHeight());
+    }
+
+    public void alignCamera()
+    {
+        Camera cam = this.getStage().getCamera();
+        Viewport v = this.getStage().getViewport();
+        // center camera on actor
+        cam.position.set( this.getX() + this.getOriginX(), this.getY() + this.getOriginY(), 0 );
+        // bound camera to layout
+        cam.position.x = MathUtils.clamp(cam.position.x,
+                cam.viewportWidth/2,  worldBounds.width -  cam.viewportWidth/2);
+        cam.position.y = MathUtils.clamp(cam.position.y,
+                cam.viewportHeight/2, worldBounds.height - cam.viewportHeight/2);
+        cam.update();
     }
 
     // --------------------------------------------------
@@ -267,5 +303,42 @@ public class CommonActor extends Actor {
 
     public void setOpacity(float opacity) {
         this.getColor().a = opacity;
+    }
+
+    public static ArrayList<CommonActor> getList(Stage stage, String className) {
+        ArrayList<CommonActor> list = new ArrayList<CommonActor>();
+
+        Class theClass = null;
+        try {
+            theClass = Class.forName(className);
+        } catch (Exception error) {
+            error.printStackTrace();
+        }
+
+        for (Actor a : stage.getActors()) {
+            if (theClass.isInstance(a))
+                list.add((CommonActor) a);
+        }
+
+        return list;
+    }
+
+    public static int count(Stage stage, String className)
+    {
+        return getList(stage, className).size();
+    }
+
+    public Vector2 preventOverlap(CommonActor otherActor) {
+        Polygon polygon1 = this.getBoundaryPolygon();
+        Polygon polygon2 = otherActor.getBoundaryPolygon();
+        if (!polygon1.getBoundingRectangle().overlaps(polygon2.getBoundingRectangle()))
+            return null;
+        Intersector.MinimumTranslationVector mtv = new Intersector.MinimumTranslationVector();
+        boolean polygonOverlap = Intersector.overlapConvexPolygons(polygon1, polygon2, mtv);
+        if (!polygonOverlap) {
+            return null;
+        }
+        this.moveBy(mtv.normal.x * mtv.depth, mtv.normal.y * mtv.depth);
+        return mtv.normal;
     }
 }
