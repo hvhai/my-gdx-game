@@ -1,8 +1,8 @@
-package com.codehunter.game;
+package com.codehunter.game.actor;
 
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
-public class Rock extends CommonActor{
+public class Rock extends CommonActor {
     public Rock(float x, float y, Stage stage) {
         super(x, y, stage);
         loadTexture("rock.png");

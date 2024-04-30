@@ -1,11 +1,11 @@
-package com.codehunter.game;
+package com.codehunter.game.actor;
 
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
 public class StarFish extends CommonActor {
-    private boolean isCollected = false;
+    private boolean isCollected;
 
     public StarFish(float x, float y, Stage stage) {
         super(x, y, stage);

@@ -1,4 +1,4 @@
-package com.codehunter.game;
+package com.codehunter.game.actor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -17,6 +17,7 @@ public class Turtle extends CommonActor {
         setBoundaryPolygon(8);
     }
 
+    @Override
     public void act(float delta) {
         super.act(delta);
 

@@ -1,7 +1,10 @@
-package com.codehunter.game;
+package com.codehunter.game.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.codehunter.game.actor.CommonActor;
+
+import static com.codehunter.game.BaseGame.setActiveScreen;
 
 public class MenuScreen extends BaseScreen {
     @Override
@@ -22,6 +25,6 @@ public class MenuScreen extends BaseScreen {
     @Override
     protected void update(float delta) {
         if (Gdx.input.isKeyPressed(Input.Keys.S))
-            MyGdxGame.setActiveScreen(new LevelScreen());
+            setActiveScreen(new LevelScreen());
     }
 }

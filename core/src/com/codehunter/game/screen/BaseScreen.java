@@ -1,4 +1,4 @@
-package com.codehunter.game;
+package com.codehunter.game.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
