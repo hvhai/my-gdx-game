@@ -20,7 +20,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CommonActor extends Actor {
+public class BaseActor extends Actor {
 
     private static Rectangle worldBounds;
 
@@ -36,7 +36,7 @@ public class CommonActor extends Actor {
 
     private Polygon boundaryPolygon;
 
-    public CommonActor(float x, float y, Stage stage) {
+    public BaseActor(float x, float y, Stage stage) {
         super();
 
         setPosition(x, y);
@@ -82,7 +82,7 @@ public class CommonActor extends Actor {
         worldBounds = new Rectangle(0, 0, width, height);
     }
 
-    public static void setWorldBounds(CommonActor otherActor) {
+    public static void setWorldBounds(BaseActor otherActor) {
         setWorldBounds(otherActor.getWidth(), otherActor.getHeight());
     }
 
@@ -99,6 +99,17 @@ public class CommonActor extends Actor {
         // check top edge
         if (getY() + getHeight() > worldBounds.height)
             setY(worldBounds.height - getHeight());
+    }
+
+    public void wrapAroundWorld() {
+        if (getX() + getWidth() < 0)
+            setX(worldBounds.width);
+        if (getX() > worldBounds.width)
+            setX(-getWidth());
+        if (getY() + getHeight() < 0)
+            setY(worldBounds.height);
+        if (getY() > worldBounds.height)
+            setY(-getHeight());
     }
 
     public void alignCamera() {
@@ -282,7 +293,7 @@ public class CommonActor extends Actor {
         return boundaryPolygon;
     }
 
-    public boolean isOverlap(CommonActor otherActor) {
+    public boolean isOverlap(BaseActor otherActor) {
         Polygon polygon1 = this.getBoundaryPolygon();
         Polygon polygon2 = otherActor.getBoundaryPolygon();
         // quick check for performance
@@ -295,7 +306,7 @@ public class CommonActor extends Actor {
         setPosition(x - getWidth() / 2, y - getHeight() / 2);
     }
 
-    public void centerAtActor(CommonActor otherActor) {
+    public void centerAtActor(BaseActor otherActor) {
         centerAtPosition(otherActor.getX() + otherActor.getWidth() / 2,
                 otherActor.getY() + otherActor.getHeight() / 2);
     }
@@ -304,8 +315,8 @@ public class CommonActor extends Actor {
         this.getColor().a = opacity;
     }
 
-    public static List<CommonActor> getList(Stage stage, String className) {
-        ArrayList<CommonActor> list = new ArrayList<CommonActor>();
+    public static List<BaseActor> getList(Stage stage, String className) {
+        ArrayList<BaseActor> list = new ArrayList<BaseActor>();
 
         Class theClass = null;
         try {
@@ -316,7 +327,7 @@ public class CommonActor extends Actor {
 
         for (Actor a : stage.getActors()) {
             if (theClass.isInstance(a))
-                list.add((CommonActor) a);
+                list.add((BaseActor) a);
         }
 
         return list;
@@ -326,7 +337,7 @@ public class CommonActor extends Actor {
         return getList(stage, className).size();
     }
 
-    public Vector2 preventOverlap(CommonActor otherActor) {
+    public Vector2 preventOverlap(BaseActor otherActor) {
         Polygon polygon1 = this.getBoundaryPolygon();
         Polygon polygon2 = otherActor.getBoundaryPolygon();
         if (!polygon1.getBoundingRectangle().overlaps(polygon2.getBoundingRectangle()))
